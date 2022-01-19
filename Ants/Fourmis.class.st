@@ -80,7 +80,7 @@ Fourmis >> evolutionVersAdulte: aNumber [
 
 	terrain versAdulte.
 	monStade := Adulte at: aNumber with: self.
-	updateState := true.
+	updateState := true
 
 	
 ]

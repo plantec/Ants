@@ -53,7 +53,7 @@ Role >> monEntite: anObject [
 	monEntite := anObject
 ]
 
-{ #category : #'as yet unclassified' }
+{ #category : #accessing }
 Role >> proieProche [
 
 	| liste radius |
