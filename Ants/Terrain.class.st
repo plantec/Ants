@@ -155,7 +155,7 @@ Terrain >> heure [
 { #category : #accessing }
 Terrain >> home [
 
-	^ home
+	^ home.
 ]
 
 { #category : #initialization }
