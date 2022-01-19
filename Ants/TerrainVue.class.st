@@ -23,7 +23,7 @@ Internal Representation and Key Implementation Points.
 "
 Class {
 	#name : #TerrainVue,
-	#superclass : #BlElement,
+	#superclass : #Object,
 	#instVars : [
 		'terrain',
 		'locationNbFourmiliere',
@@ -34,7 +34,10 @@ Class {
 		'locationNbLarves',
 		'locationNbNymphes',
 		'locationNbAdultes',
-		'locationDepot'
+		'locationDepot',
+		'space',
+		'mainScreen',
+		'home'
 	],
 	#classInstVars : [
 		'terrain'
@@ -77,74 +80,157 @@ TerrainVue >> graphicLoop [
 		self actualiserInterface.
 		tempChildren := terrain home children.
 		tempChildren do: [ :temp | temp animation ].
-		45 milliSecond wait ] ] fork
+		55 milliSecond wait ] ] fork
+]
+
+{ #category : #accessing }
+TerrainVue >> home [
+
+	^home
+]
+
+{ #category : #accessing }
+TerrainVue >> mainScreen [
+
+	^ mainScreen
+]
+
+{ #category : #accessing }
+TerrainVue >> space [
+
+	^ space
 ]
 
 { #category : #action }
 TerrainVue >> start [
 
-	"Ajout de l'heure à l'interface."
-	terrain space addChild: ( (BlTextElement new relocate: 50@430) text: ('Time :' asRopedText )  ).
-	locationHeure:= BlTextElement new 
-							relocate: 50@450; text: (terrain heure asRopedText ) .
-	terrain space addChild: locationHeure.
-	
-	"Ajout du nombre de fourmilières à l'interface."
-	terrain space addChild: ( (BlTextElement new relocate: 50@480) text: ('Nombre de Fourmilières :' asRopedText )  ).
-	locationNbFourmiliere:= BlTextElement new 
-							relocate: 50@500; text: (terrain nbFourmiliere asRopedText ) .
-	terrain space addChild: locationNbFourmiliere.
-	
-	terrain space addChild: ( (BlTextElement new relocate: 100@500) text: ('Dépôt :' asRopedText )  ).
-	locationDepot:= BlTextElement new 
-							relocate: 150@500; text: (terrain depot asRopedText ) .
-	terrain space addChild: locationDepot.
-	
-	
-	
-	
-	"Ajout du nombre de proies à l'interface."		
-	terrain space addChild: ( (BlTextElement new relocate: 50@530) text: ('Nombre de Proies :' asRopedText )  ).			
-	locationNbProie:= BlTextElement new 
-					relocate: 50@550; text: (terrain nbProie asRopedText ) .
-	terrain space addChild: locationNbProie.
-	
-	"Ajout du nombre de pheromones à l'interface."
-	terrain space addChild: ( (BlTextElement new relocate: 450@530) text: ('Nombre de Pheromones :' asRopedText )  ).
-	locationNbPheromone:= BlTextElement new 
-					relocate: 450@550; text: (terrain nbPheromone asRopedText ) .
-	terrain space addChild: locationNbPheromone.
-	
-	"Ajout du nombre de fourmis à l'interface."
-	terrain space addChild: ( (BlTextElement new relocate: 450@480) text: ('Nombre de Fourmis :' asRopedText )  ).
-	
-	terrain space addChild: ( (BlTextElement new relocate: 450@500) text: ('Oeufs : ' asRopedText )  ).
-	locationNbOeufs:= BlTextElement new 
-					relocate: 500@500; text: (terrain nbOeufs asRopedText ) .
-	terrain space addChild: locationNbOeufs.
+	| monCercle |
+	space := BlSpace new.
+	space title: 'Terrain'.
+	space extent: 800 @ 600.
+	space root background: Color white.
+	space show.
 
-	terrain space addChild: ( (BlTextElement new relocate: 525@500) text: ('Larves : ' asRopedText )  ).
-	locationNbLarves := BlTextElement new 
-					relocate: 575@500; text: (terrain nbLarves asRopedText ) .
-	terrain space addChild: locationNbLarves.
-	
-	terrain space addChild: ( (BlTextElement new relocate: 600@500) text: ('Nymphes : ' asRopedText )  ).
-	locationNbNymphes := BlTextElement new 
-					relocate: 675@500; text: (terrain nbNymphes asRopedText ) .
-	terrain space addChild: locationNbNymphes.
-	
-	terrain space addChild: ( (BlTextElement new relocate: 700@500) text: ('Adultes : ' asRopedText )  ).
-	locationNbAdultes := BlTextElement new 
-					relocate: 760@500; text: (terrain nbAdultes asRopedText ) .
-	terrain space addChild: locationNbAdultes.
-	
-	self graphicLoop.
+	mainScreen := BlElement new.
+	mainScreen size: 800 @ 600.
+	mainScreen background: Color gray.
+	space addChild: mainScreen.
+
+	home := BlElement new.
+	home size: 800 @ 400.
+	home background: Color black.
+	mainScreen addChild: home.
+
+	monCercle := BlElement new
+		             background: Color transparent;
+		             border: (BlBorder paint: Color blue width: 1);
+		             geometry: BlCircle new;
+		             size: 200 @ 200;
+		             relocate: terrain fourmiliere position - 100.
+	mainScreen addChild: monCercle.
+
+	"Ajout de l'heure à l'interface."
+	mainScreen addChild: ((BlTextElement new
+			  relocate: 50 @ 430;
+			  background: Color transparent) text: 'Time :' asRopedText).
+	locationHeure := BlTextElement new
+		                 relocate: 50 @ 450;
+		                 background: Color transparent;
+		                 text: terrain heure asRopedText.
+	mainScreen addChild: locationHeure.
+
+	"Ajout du nombre de fourmilières à l'interface."
+	mainScreen addChild: ((BlTextElement new
+			  relocate: 50 @ 480;
+			  background: Color transparent) text:
+			 'Nombre de Fourmilières :' asRopedText).
+	locationNbFourmiliere := BlTextElement new
+		                         relocate: 50 @ 500;
+		                         background: Color transparent;
+		                         text: terrain nbFourmiliere asRopedText.
+	mainScreen addChild: locationNbFourmiliere.
+
+	mainScreen addChild: ((BlTextElement new
+			  relocate: 100 @ 500;
+			  background: Color transparent) text: 'Dépôt :' asRopedText).
+	locationDepot := BlTextElement new
+		                 relocate: 150 @ 500;
+		                 background: Color transparent;
+		                 text: terrain depot asRopedText.
+	mainScreen addChild: locationDepot.
+
+
+	"Ajout du nombre de proies à l'interface."
+	mainScreen addChild: ((BlTextElement new
+			  relocate: 50 @ 530;
+			  background: Color transparent) text:
+			 'Nombre de Proies :' asRopedText).
+	locationNbProie := BlTextElement new
+		                   relocate: 50 @ 550;
+		                   background: Color transparent;
+		                   text: terrain nbProie asRopedText.
+	mainScreen addChild: locationNbProie.
+
+	"Ajout du nombre de pheromones à l'interface."
+	mainScreen addChild: ((BlTextElement new
+			  relocate: 450 @ 530;
+			  background: Color transparent) text:
+			 'Nombre de Pheromones :' asRopedText).
+	locationNbPheromone := BlTextElement new
+		                       relocate: 450 @ 550;
+		                       background: Color transparent;
+		                       text: terrain nbPheromone asRopedText.
+	mainScreen addChild: locationNbPheromone.
+
+	"Ajout du nombre de fourmis à l'interface."
+	mainScreen addChild: ((BlTextElement new
+			  relocate: 450 @ 480;
+			  background: Color transparent) text:
+			 'Nombre de Fourmis :' asRopedText).
+
+	mainScreen addChild: ((BlTextElement new
+			  relocate: 450 @ 500;
+			  background: Color transparent) text: 'Oeufs : ' asRopedText).
+	locationNbOeufs := BlTextElement new
+		                   relocate: 500 @ 500;
+		                   background: Color transparent;
+		                   text: terrain nbOeufs asRopedText.
+	mainScreen addChild: locationNbOeufs.
+
+	mainScreen addChild: ((BlTextElement new
+			  relocate: 525 @ 500;
+			  background: Color transparent) text: 'Larves : ' asRopedText).
+	locationNbLarves := BlTextElement new
+		                    relocate: 575 @ 500;
+		                    background: Color transparent;
+		                    text: terrain nbLarves asRopedText.
+	mainScreen addChild: locationNbLarves.
+
+	mainScreen addChild: ((BlTextElement new
+			  relocate: 600 @ 500;
+			  background: Color transparent) text: 'Nymphes : ' asRopedText).
+	locationNbNymphes := BlTextElement new
+		                     relocate: 675 @ 500;
+		                     background: Color transparent;
+		                     text: terrain nbNymphes asRopedText.
+	mainScreen addChild: locationNbNymphes.
+
+	mainScreen addChild: ((BlTextElement new
+			  relocate: 700 @ 500;
+			  background: Color transparent) text: 'Adultes : ' asRopedText).
+	locationNbAdultes := BlTextElement new
+		                     relocate: 760 @ 500;
+		                     background: Color transparent;
+		                     text: terrain nbAdultes asRopedText.
+	mainScreen addChild: locationNbAdultes.
+
+	self graphicLoop
 ]
 
 { #category : #accessing }
 TerrainVue >> terrain [
 
-	^ terrain.
+	^ terrain
 ]
 
 { #category : #accessing }

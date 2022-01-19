@@ -42,7 +42,6 @@ Fourmiliere class >> new: aTerrain [
 Fourmiliere >> action: aNumber [
 
 	(aNumber % 10 == 0)
-	
 	ifTrue: 
 		[
 			terrain addFourmis.

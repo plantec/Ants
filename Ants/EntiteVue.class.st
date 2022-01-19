@@ -77,6 +77,7 @@ EntiteVue >> initializeElementsAndAppareance: aNumber [
 	
 	self relocate: myEntite position.
 	aNumber = 0 ifFalse: [ ^ self ].
+	
 	self background: Color blue.
 	self size: 20 @ 20
 ]

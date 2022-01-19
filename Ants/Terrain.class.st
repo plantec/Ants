@@ -34,7 +34,6 @@ Class {
 		'proies',
 		'pheromones',
 		'fourmiliere',
-		'space',
 		'home',
 		'heure',
 		'nbFourmiliere',
@@ -43,7 +42,9 @@ Class {
 		'nbOeufs',
 		'nbLarves',
 		'nbNymphes',
-		'nbAdultes'
+		'nbAdultes',
+		'mainScreen',
+		'space'
 	],
 	#category : #Ants
 }
@@ -53,9 +54,8 @@ Terrain class >> simulation [
 	| monTerrain |
 	
 	monTerrain := self new.
-	monTerrain startGraphicAnimation.
 	monTerrain mainLoop.
-	^ monTerrain 
+	^ monTerrain.
 ]
 
 { #category : #adding }
@@ -155,7 +155,7 @@ Terrain >> heure [
 { #category : #accessing }
 Terrain >> home [
 
-	^ home.
+	^ home
 ]
 
 { #category : #initialization }
@@ -175,30 +175,18 @@ Terrain >> initialize [
 	entites := OrderedCollection new.
 	proies := OrderedCollection new.
 	pheromones := OrderedCollection new.
-
-	space := BlSpace new.
-	space title: 'Terrain'.
-	space extent: 800 @ 600.
-	space root background: Color white.
-
-	home := BlElement new.
-	home size: 800 @ 400.
-	home background: Color black.
-	space addChild: home.
-
+	
 	"Ajout de la première fourmilière."
 	monEntite := Fourmiliere new: self.
 	fourmiliere := monEntite.
+	
+	self startGraphicAnimation.
+		
+	"Ajout de la première fourmilière."
+	
 	monEntiteVue := EntiteVue with: monEntite as: 0.
 	home addChild: monEntiteVue.
 	nbFourmiliere := nbFourmiliere + 1.
-
-	monEntiteVue := BlElement new
-		                border: (BlBorder paint: Color blue width: 1);
-		                geometry: BlCircle new;
-		                size: 200 @ 200;
-		                relocate: monEntite position - 100.
-	space addChild: monEntiteVue.
 
 	1 to: 10 do: [ :i | 
 		monEntite := Proie new: self.
@@ -207,7 +195,7 @@ Terrain >> initialize [
 		home addChild: monEntiteVue.
 		nbProie := nbProie + 1 ].
 
-	space show
+
 ]
 
 { #category : #action }
@@ -231,7 +219,13 @@ Terrain >> mainLoop [
 		pheromones do: [ :temp | temp ifNotNil: [ temp action: heure ] ].
 
 		heure := heure + 1.
-		30 milliSecond wait ] ] fork
+		50 milliSecond wait ] ] fork
+]
+
+{ #category : #adding }
+Terrain >> mainScreen [
+
+	^mainScreen
 ]
 
 { #category : #accessing }
@@ -294,18 +288,15 @@ Terrain >> removeToDepot: aNumber [
 	fourmiliere removeToDepot: aNumber
 ]
 
-{ #category : #accessing }
-Terrain >> space [ 
-	^space
-]
-
 { #category : #initialization }
 Terrain >> startGraphicAnimation [
 
 	| temp |
 	temp := TerrainVue with: self.
 	temp start.
-	^ temp
+	home := temp home.
+	mainScreen := temp mainScreen.
+	space := temp space.
 ]
 
 { #category : #adding }
