@@ -76,11 +76,11 @@ TerrainVue >> graphicLoop [
 
 	| tempChildren |
 	[ 
-	1000 timesRepeat: [ 
+	1100 timesRepeat: [ 
 		self actualiserInterface.
 		tempChildren := terrain home children.
 		tempChildren do: [ :temp | temp animation ].
-		55 milliSecond wait ] ] fork
+		60 milliSecond wait ] ] fork
 ]
 
 { #category : #accessing }
