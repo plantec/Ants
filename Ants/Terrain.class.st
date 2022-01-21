@@ -203,14 +203,14 @@ Terrain >> mainLoop [
 
 	| message |
 	[ 
-	1000 timesRepeat: [ "Action sur le fourmilière."
+	[ true ] whileTrue: [ "Action sur le fourmilière."
 		message := fourmiliere action: heure.
 
 		"Apparition de nouvelles proies."
 		heure % 100 = 0 ifTrue: [ self addProie ].
 
 		"Action sur les proies du terrain."
-		proies do: [ :temp | temp ifNotNil: [ temp action: heure ]].
+		proies do: [ :temp | temp ifNotNil: [ temp action: heure ] ].
 
 		"Action sur les fourmis du terrain."
 		entites do: [ :temp | temp ifNotNil: [ temp action: heure ] ].
