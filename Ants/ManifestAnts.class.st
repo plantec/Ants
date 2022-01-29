@@ -2,8 +2,10 @@
 Ants
 ----
 Anthill simulation
-To start Ants, DoIt on :
-Terrain simulation
+To start an ground with anthill, DoIt on :
+Terrain start
+
+Possible to start multiple simulation.
 "
 Class {
 	#name : #ManifestAnts,
