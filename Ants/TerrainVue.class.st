@@ -25,6 +25,7 @@ Class {
 	#name : #TerrainVue,
 	#superclass : #Object,
 	#instVars : [
+		'graphicLoop',
 		'terrain',
 		'locationNbFourmiliere',
 		'locationNbProie',
@@ -71,16 +72,16 @@ TerrainVue >> actualiserInterface [
 	(locationNbAdultes text asString = terrain nbAdultes asString) ifFalse: [ locationNbAdultes text: (terrain nbAdultes asRopedText ). ].
 ]
 
-{ #category : #action }
+{ #category : #accessing }
 TerrainVue >> graphicLoop [
 
-	| tempChildren |
-	[ 
-	1100 timesRepeat: [ 
-		self actualiserInterface.
-		tempChildren := terrain home children.
-		tempChildren do: [ :temp | temp animation ].
-		60 milliSecond wait ] ] fork
+	^ graphicLoop
+]
+
+{ #category : #accessing }
+TerrainVue >> graphicLoop: anObject [
+
+	graphicLoop := anObject
 ]
 
 { #category : #accessing }
@@ -124,7 +125,7 @@ TerrainVue >> start [
 	monCercle := BlElement new
 		             background: Color transparent;
 		             border: (BlBorder paint: Color blue width: 1);
-		             geometry: BlCircle new;
+		             geometry: BlCircleGeometry new;
 		             size: 200 @ 200;
 		             relocate: terrain fourmiliere position - 100.
 	mainScreen addChild: monCercle.
@@ -224,7 +225,37 @@ TerrainVue >> start [
 		                     text: terrain nbAdultes asRopedText.
 	mainScreen addChild: locationNbAdultes.
 
-	self graphicLoop
+	self startGraphicLoop
+]
+
+{ #category : #action }
+TerrainVue >> startGraphicLoop [
+
+	| tempChildren |
+	graphicLoop ifNotNil: [ "Loop already started" ^self ].
+	graphicLoop := ([ 
+		[true] whileTrue: [ 
+			self actualiserInterface.
+			tempChildren := self home children.
+			tempChildren do: [ :temp | temp animation ].
+			60 milliSecond wait. 
+		] 
+	] fork)
+]
+
+{ #category : #action }
+TerrainVue >> stop [
+	"stop all the simulation"
+
+	self stopGraphicLoop
+]
+
+{ #category : #action }
+TerrainVue >> stopGraphicLoop [
+
+	graphicLoop ifNil:[^self].
+	graphicLoop terminate.
+	graphicLoop := nil.
 ]
 
 { #category : #accessing }
@@ -236,5 +267,5 @@ TerrainVue >> terrain [
 { #category : #accessing }
 TerrainVue >> terrain: aTerrain [
 
-	terrain := aTerrain.
+	terrain := aTerrain
 ]

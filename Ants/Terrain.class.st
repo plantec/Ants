@@ -30,11 +30,11 @@ Class {
 	#name : #Terrain,
 	#superclass : #Object,
 	#instVars : [
+		'mainLoop',
 		'entites',
 		'proies',
 		'pheromones',
 		'fourmiliere',
-		'home',
 		'heure',
 		'nbFourmiliere',
 		'nbProie',
@@ -43,19 +43,27 @@ Class {
 		'nbLarves',
 		'nbNymphes',
 		'nbAdultes',
-		'mainScreen',
-		'space'
+		'space',
+		'groundView'
 	],
 	#category : #Ants
 }
 
 { #category : #initialization }
 Terrain class >> simulation [
-	| monTerrain |
 	
-	monTerrain := self new.
-	monTerrain mainLoop.
-	^ monTerrain.
+	self deprecated: 'use : start'.
+	^self start
+]
+
+{ #category : #initialization }
+Terrain class >> start [
+	<script>
+	| ground |
+
+	ground := self new.
+	ground startMainLoop.
+	^ ground
 ]
 
 { #category : #adding }
@@ -65,7 +73,7 @@ Terrain >> addFourmis [
 	maFourmis := Fourmis in: self at: fourmiliere hour: heure.
 	entites add: maFourmis.
 	maFourmisVue := EntiteVue with: maFourmis as: 3.
-	home addChild: maFourmisVue.
+	self groundView home addChild: maFourmisVue.
 	nbOeufs := nbOeufs + 1
 ]
 
@@ -76,7 +84,7 @@ Terrain >> addPheromone: anEntite [
 	monEntite := Pheromone in: self at: anEntite position hour: heure.
 	pheromones add: monEntite.
 	monEntiteVue := EntiteVue with: monEntite as: 2.
-	home addChild: monEntiteVue.
+	self groundView home addChild: monEntiteVue.
 	nbPheromone := nbPheromone + 1
 ]
 
@@ -87,7 +95,7 @@ Terrain >> addProie [
 	monEntite := Proie new: self.
 	proies add: monEntite.
 	monEntiteVue := EntiteVue with: monEntite as: 1.
-	home addChild: monEntiteVue.
+	self groundView home addChild: monEntiteVue.
 	nbProie := nbProie + 1
 ]
 
@@ -104,8 +112,8 @@ Terrain >> deleteEntite: anEntite [
 
 	entites remove: anEntite.
 
-	home children do: [ :temp | 
-		temp myEntite = anEntite ifTrue: [ home removeChild: temp ] ].
+	self groundView home children do: [ :temp | 
+		temp myEntite = anEntite ifTrue: [ self groundView home removeChild: temp ] ].
 
 	(anEntite monStade isAdulte)
 		ifFalse: [ nbLarves := nbLarves - 1 ];
@@ -117,8 +125,8 @@ Terrain >> deletePheromone: aPheromone [
 
 	pheromones remove: aPheromone.
 
-	home children do: [ :temp | 
-		temp myEntite = aPheromone ifTrue: [ home removeChild: temp ] ].
+	self groundView home children do: [ :temp | 
+		temp myEntite = aPheromone ifTrue: [ self groundView home removeChild: temp ] ].
 
 	nbPheromone := nbPheromone - 1
 ]
@@ -128,8 +136,8 @@ Terrain >> deleteProie: aProie [
 
 	proies remove: aProie.
 
-	home children do: [ :temp | 
-		temp myEntite = aProie ifTrue: [ home removeChild: temp ] ].
+	self groundView home children do: [ :temp | 
+		temp myEntite = aProie ifTrue: [ self groundView home removeChild: temp ] ].
 
 	nbProie := nbProie - 1
 ]
@@ -147,21 +155,21 @@ Terrain >> fourmiliere [
 ]
 
 { #category : #accessing }
+Terrain >> groundView [
+
+	^groundView
+]
+
+{ #category : #accessing }
 Terrain >> heure [
 
 	^ heure
 ]
 
-{ #category : #accessing }
-Terrain >> home [
-
-	^ home
-]
-
 { #category : #initialization }
 Terrain >> initialize [
-
 	| monEntite monEntiteVue |
+
 	super initialize.
 
 	nbPheromone := 0.
@@ -185,47 +193,23 @@ Terrain >> initialize [
 	"Ajout de la première fourmilière."
 	
 	monEntiteVue := EntiteVue with: monEntite as: 0.
-	home addChild: monEntiteVue.
+	self groundView home addChild: monEntiteVue.
 	nbFourmiliere := nbFourmiliere + 1.
 
 	1 to: 10 do: [ :i | 
 		monEntite := Proie new: self.
 		proies add: monEntite.
 		monEntiteVue := EntiteVue with: monEntite as: 1.
-		home addChild: monEntiteVue.
+		self groundView home addChild: monEntiteVue.
 		nbProie := nbProie + 1 ].
 
 
 ]
 
-{ #category : #action }
+{ #category : #accessing }
 Terrain >> mainLoop [
-
-	| message |
-	[ 
-	[ true ] whileTrue: [ "Action sur le fourmilière."
-		message := fourmiliere action: heure.
-
-		"Apparition de nouvelles proies."
-		heure % 100 = 0 ifTrue: [ self addProie ].
-
-		"Action sur les proies du terrain."
-		proies do: [ :temp | temp ifNotNil: [ temp action: heure ] ].
-
-		"Action sur les fourmis du terrain."
-		entites do: [ :temp | temp ifNotNil: [ temp action: heure ] ].
-
-		"Action sur les pheromones du terrain."
-		pheromones do: [ :temp | temp ifNotNil: [ temp action: heure ] ].
-
-		heure := heure + 1.
-		50 milliSecond wait ] ] fork
-]
-
-{ #category : #adding }
-Terrain >> mainScreen [
-
-	^mainScreen
+	
+	^mainLoop
 ]
 
 { #category : #accessing }
@@ -288,15 +272,66 @@ Terrain >> removeToDepot: aNumber [
 	fourmiliere removeToDepot: aNumber
 ]
 
-{ #category : #initialization }
+{ #category : #action }
 Terrain >> startGraphicAnimation [
 
-	| temp |
-	temp := TerrainVue with: self.
-	temp start.
-	home := temp home.
-	mainScreen := temp mainScreen.
-	space := temp space.
+	groundView := TerrainVue with: self.
+	groundView start.
+	
+	"Subscribe to window close event"
+	groundView space addEventHandler: (BlEventHandler on: BlSpaceClosedEvent do:[ :event | 
+		self stop.
+	]).
+]
+
+{ #category : #action }
+Terrain >> startMainLoop [
+	| message |
+	mainLoop ifNotNil: [ "Loop already started" ^self ].
+	mainLoop := ([ 
+		[ true ] whileTrue: [ "Action sur le fourmilière."
+		message := fourmiliere action: heure.
+
+		"Apparition de nouvelles proies."
+		heure % 100 = 0 ifTrue: [ self addProie ].
+
+		"Action sur les proies du terrain."
+		proies do: [ :temp | temp ifNotNil: [ temp action: heure ] ].
+
+		"Action sur les fourmis du terrain."
+		entites do: [ :temp | temp ifNotNil: [ temp action: heure ] ].
+
+		"Action sur les pheromones du terrain."
+		pheromones do: [ :temp | temp ifNotNil: [ temp action: heure ] ].
+
+		heure := heure + 1.
+		50 milliSecond wait ] 
+	] fork)
+]
+
+{ #category : #action }
+Terrain >> stop [
+	
+	"Stop UI"
+	self stopGraphicAnimation.
+	
+	"Stop Simulation"
+	self stopMainLoop.
+]
+
+{ #category : #action }
+Terrain >> stopGraphicAnimation [
+
+	groundView stop.
+	groundView := nil.
+]
+
+{ #category : #action }
+Terrain >> stopMainLoop [
+
+	mainLoop ifNil:[^self].
+	mainLoop terminate.
+	mainLoop := nil.
 ]
 
 { #category : #adding }
