@@ -32,7 +32,7 @@ Class {
 		'isFourmis',
 		'isProie'
 	],
-	#category : #Ants
+	#category : #'Ants-View'
 }
 
 { #category : #'instance creation' }

@@ -28,7 +28,7 @@ Class {
 		'monEntite',
 		'isAttacking'
 	],
-	#category : #Ants
+	#category : #'Ants-Model'
 }
 
 { #category : #testing }

@@ -24,7 +24,7 @@ Internal Representation and Key Implementation Points.
 Class {
 	#name : #Oeuf,
 	#superclass : #Stade,
-	#category : #Ants
+	#category : #'Ants-Model'
 }
 
 { #category : #accessing }

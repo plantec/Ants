@@ -29,7 +29,7 @@ Class {
 		'monEntite',
 		'isAdulte'
 	],
-	#category : #Ants
+	#category : #'Ants-Model'
 }
 
 { #category : #testing }

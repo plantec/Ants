@@ -46,7 +46,7 @@ Class {
 		'space',
 		'groundView'
 	],
-	#category : #Ants
+	#category : #'Ants-Core'
 }
 
 { #category : #initialization }

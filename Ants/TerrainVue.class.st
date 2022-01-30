@@ -43,7 +43,7 @@ Class {
 	#classInstVars : [
 		'terrain'
 	],
-	#category : #Ants
+	#category : #'Ants-View'
 }
 
 { #category : #'instance creation' }

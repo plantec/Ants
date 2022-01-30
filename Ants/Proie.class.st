@@ -34,7 +34,7 @@ Class {
 		'attackers',
 		'timer'
 	],
-	#category : #Ants
+	#category : #'Ants-Model'
 }
 
 { #category : #'instance creation' }

@@ -24,7 +24,7 @@ Internal Representation and Key Implementation Points.
 Class {
 	#name : #Soldat,
 	#superclass : #Role,
-	#category : #Ants
+	#category : #'Ants-Model'
 }
 
 { #category : #action }

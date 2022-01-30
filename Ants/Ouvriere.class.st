@@ -35,7 +35,7 @@ Class {
 		'monAvantAvantDernierePosition',
 		'maNourriture'
 	],
-	#category : #Ants
+	#category : #'Ants-Model'
 }
 
 { #category : #action }

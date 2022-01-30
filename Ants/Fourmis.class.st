@@ -31,7 +31,7 @@ Class {
 		'isSoldat',
 		'isReine'
 	],
-	#category : #Ants
+	#category : #'Ants-Model'
 }
 
 { #category : #accessing }
