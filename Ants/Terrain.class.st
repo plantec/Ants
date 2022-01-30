@@ -62,7 +62,6 @@ Terrain class >> start [
 	| ground |
 
 	ground := self new.
-	ground startMainLoop.
 	^ ground
 ]
 
@@ -204,7 +203,7 @@ Terrain >> initialize [
 	self groundView home addChild: monEntiteVue.
 	nbFourmiliere := nbFourmiliere + 1.
 
-	1 to: 10 do: [ :i | self addProie ].
+	
 ]
 
 { #category : #accessing }
@@ -290,6 +289,10 @@ Terrain >> startMainLoop [
 	| message |
 	mainLoop ifNotNil: [ "Loop already started" ^self ].
 	mainLoop := ([ 
+		
+		"Initialize some Proie at the beginning"
+		1 to: 10 do: [ :i | self addProie ].
+		
 		[ true ] whileTrue: [ "Action sur le fourmilière."
 			message := fourmiliere action: heure.
 

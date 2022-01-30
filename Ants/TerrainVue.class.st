@@ -58,7 +58,7 @@ TerrainVue class >> with: aTerrain [
 { #category : #private }
 TerrainVue >> createInfoPanel: aParentBlElement [
 
-	| infoPanel |
+	| infoPanel button |
 	infoPanel := BlElement new.
 	infoPanel background: Color gray.
 	infoPanel size: 800@200.
@@ -72,6 +72,21 @@ TerrainVue >> createInfoPanel: aParentBlElement [
 		infoPanel relocate: 0@((aParentBlElement size y) - 200).	
 	]. 
 	aParentBlElement addChild: infoPanel.
+
+	"Adding start button"
+	button := BlElement new.
+	button background: Color green.
+	button size: 100@25.
+	button relocate: 50@0.
+	button addChild:((BlTextElement new relocate: 5@10) text: ('Click to Start >' asRopedText )).
+	button addEventHandler: (BlEventHandler on: BlClickEvent do:[ :anEvent | 
+		button isVisible ifTrue:[
+			button visibility: BlVisibility hidden.
+			terrain startMainLoop.
+		].
+		anEvent consumed: true.
+	]).
+	infoPanel addChild: button.
 
 	"Ajout de l'heure à l'interface."
 	infoPanel addChild: ((BlTextElement new
