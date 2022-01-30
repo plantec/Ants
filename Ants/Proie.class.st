@@ -79,11 +79,11 @@ Proie >> action: aNumber [
 	x := 7 atRandom - 4.
 	x := position x + x.
 	x < 5 ifTrue: [ x := 5 ].
-	x > 795 ifTrue: [ x := 795 ].
+	"x > 795 ifTrue: [ x := 795 ]."
 	y := 7 atRandom - 4.
 	y := position y + y.
 	y < 5 ifTrue: [ y := 5 ].
-	y > 395 ifTrue: [ y := 395 ].
+	"y > 395 ifTrue: [ y := 395 ]."
 	position := x@y
 ]
 

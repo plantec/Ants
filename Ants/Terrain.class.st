@@ -91,10 +91,20 @@ Terrain >> addPheromone: anEntite [
 { #category : #adding }
 Terrain >> addProie [
 
-	| monEntite monEntiteVue |
+	| monEntite monEntiteVue size |
 	monEntite := Proie new: self.
+	
+	"Set position depending screen size"
+	size := self groundView home size.
+	size ifNotNil:[
+		(size > (800@400)) ifTrue:[
+			monEntite position: ((size x rounded atRandom) @ (size y rounded atRandom)).
+		].	
+	].
+	
 	proies add: monEntite.
 	monEntiteVue := EntiteVue with: monEntite as: 1.
+	
 	self groundView home addChild: monEntiteVue.
 	nbProie := nbProie + 1
 ]
@@ -187,23 +197,14 @@ Terrain >> initialize [
 	"Ajout de la première fourmilière."
 	monEntite := Fourmiliere new: self.
 	fourmiliere := monEntite.
-	
+
 	self startGraphicAnimation.
-		
-	"Ajout de la première fourmilière."
-	
+
 	monEntiteVue := EntiteVue with: monEntite as: 0.
 	self groundView home addChild: monEntiteVue.
 	nbFourmiliere := nbFourmiliere + 1.
 
-	1 to: 10 do: [ :i | 
-		monEntite := Proie new: self.
-		proies add: monEntite.
-		monEntiteVue := EntiteVue with: monEntite as: 1.
-		self groundView home addChild: monEntiteVue.
-		nbProie := nbProie + 1 ].
-
-
+	1 to: 10 do: [ :i | self addProie ].
 ]
 
 { #category : #accessing }
@@ -290,22 +291,23 @@ Terrain >> startMainLoop [
 	mainLoop ifNotNil: [ "Loop already started" ^self ].
 	mainLoop := ([ 
 		[ true ] whileTrue: [ "Action sur le fourmilière."
-		message := fourmiliere action: heure.
+			message := fourmiliere action: heure.
 
-		"Apparition de nouvelles proies."
-		heure % 100 = 0 ifTrue: [ self addProie ].
+			"Apparition de nouvelles proies."
+			heure % 100 = 0 ifTrue: [ self addProie ].
 
-		"Action sur les proies du terrain."
-		proies do: [ :temp | temp ifNotNil: [ temp action: heure ] ].
+			"Action sur les proies du terrain."
+			proies do: [ :temp | temp ifNotNil: [ temp action: heure ] ].
 
-		"Action sur les fourmis du terrain."
-		entites do: [ :temp | temp ifNotNil: [ temp action: heure ] ].
+			"Action sur les fourmis du terrain."
+			entites do: [ :temp | temp ifNotNil: [ temp action: heure ] ].
 
-		"Action sur les pheromones du terrain."
-		pheromones do: [ :temp | temp ifNotNil: [ temp action: heure ] ].
+			"Action sur les pheromones du terrain."
+			pheromones do: [ :temp | temp ifNotNil: [ temp action: heure ] ].
 
-		heure := heure + 1.
-		50 milliSecond wait ] 
+			heure := heure + 1.
+			50 milliSecond wait
+		] 
 	] fork)
 ]
 
