@@ -55,23 +55,6 @@ TerrainVue class >> with: aTerrain [
 	
 ]
 
-{ #category : #action }
-TerrainVue >> actualiserInterface [
-	
-	"Mise à jour des données sur le time et les phéromones de l'interface."
-	locationHeure text: (terrain heure asRopedText ).
-	locationNbPheromone text: (terrain nbPheromone asRopedText ).
-	
-	"Si changegmeent d'une donnée mise à jour de la donnée dans l'interface."
-	(locationNbFourmiliere text asString = terrain nbFourmiliere asString) ifFalse: [ locationNbFourmiliere text: (terrain nbFourmiliere asRopedText ). ].
-	(locationDepot text asString  = terrain depot asString) ifFalse: [ locationDepot text: (terrain depot asRopedText ). ].
-	(locationNbProie text asString = terrain nbProie asString) ifFalse: [ locationNbProie text: (terrain nbProie asRopedText ). ].
-	(locationNbOeufs text asString = terrain nbOeufs asString) ifFalse: [ locationNbOeufs text: (terrain nbOeufs asRopedText ). ].
-	(locationNbLarves text asString = terrain nbLarves asString) ifFalse: [ locationNbLarves text: (terrain nbLarves asRopedText ). ].
-	(locationNbNymphes text asString = terrain nbNymphes asString) ifFalse: [ locationNbNymphes text: (terrain nbNymphes asRopedText ). ].
-	(locationNbAdultes text asString = terrain nbAdultes asString) ifFalse: [ locationNbAdultes text: (terrain nbAdultes asRopedText ). ].
-]
-
 { #category : #accessing }
 TerrainVue >> graphicLoop [
 
@@ -234,13 +217,17 @@ TerrainVue >> startGraphicLoop [
 	| tempChildren |
 	graphicLoop ifNotNil: [ "Loop already started" ^self ].
 	graphicLoop := ([ 
-		[true] whileTrue: [ 
-			self actualiserInterface.
+		[true] whileTrue: [ | startTimeInMs endTimeInMs waitingTimeInMs |
+			startTimeInMs := Time now asMilliSeconds.
+			self updateUI.
 			tempChildren := self home children.
 			tempChildren do: [ :temp | temp animation ].
-			60 milliSecond wait. 
+			endTimeInMs := Time now asMilliSeconds.
+			"60 fps correspond to ~16.6ms per frame"
+			waitingTimeInMs := (16.6 - (endTimeInMs - startTimeInMs) max: 0.1). 
+			waitingTimeInMs milliSecond wait.
 		] 
-	] fork)
+	] forkAt: Processor userBackgroundPriority )
 ]
 
 { #category : #action }
@@ -268,4 +255,21 @@ TerrainVue >> terrain [
 TerrainVue >> terrain: aTerrain [
 
 	terrain := aTerrain
+]
+
+{ #category : #action }
+TerrainVue >> updateUI [
+	
+	"Mise à jour des données sur le time et les phéromones de l'interface."
+	locationHeure text: (terrain heure asRopedText ).
+	locationNbPheromone text: (terrain nbPheromone asRopedText ).
+	
+	"Si changegmeent d'une donnée mise à jour de la donnée dans l'interface."
+	(locationNbFourmiliere text asString = terrain nbFourmiliere asString) ifFalse: [ locationNbFourmiliere text: (terrain nbFourmiliere asRopedText ). ].
+	(locationDepot text asString  = terrain depot asString) ifFalse: [ locationDepot text: (terrain depot asRopedText ). ].
+	(locationNbProie text asString = terrain nbProie asString) ifFalse: [ locationNbProie text: (terrain nbProie asRopedText ). ].
+	(locationNbOeufs text asString = terrain nbOeufs asString) ifFalse: [ locationNbOeufs text: (terrain nbOeufs asRopedText ). ].
+	(locationNbLarves text asString = terrain nbLarves asString) ifFalse: [ locationNbLarves text: (terrain nbLarves asRopedText ). ].
+	(locationNbNymphes text asString = terrain nbNymphes asString) ifFalse: [ locationNbNymphes text: (terrain nbNymphes asRopedText ). ].
+	(locationNbAdultes text asString = terrain nbAdultes asString) ifFalse: [ locationNbAdultes text: (terrain nbAdultes asRopedText ). ].
 ]
