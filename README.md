@@ -17,6 +17,12 @@ Metacello new
    load.
 ```
 
+### Starting an Anthill simulation
+
+```smalltalk
+Terrain start.
+```
+
 ## Illustrations
 
 ![image](https://user-images.githubusercontent.com/49183340/151702533-21faebe3-b317-4750-9870-80f0ab1664ca.png)
