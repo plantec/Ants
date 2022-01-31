@@ -25,6 +25,7 @@ Class {
 	#name : #TerrainVue,
 	#superclass : #Object,
 	#instVars : [
+		'graphicLoop',
 		'terrain',
 		'locationNbFourmiliere',
 		'locationNbProie',
@@ -42,7 +43,7 @@ Class {
 	#classInstVars : [
 		'terrain'
 	],
-	#category : #Ants
+	#category : #'Ants-View'
 }
 
 { #category : #'instance creation' }
@@ -54,33 +55,145 @@ TerrainVue class >> with: aTerrain [
 	
 ]
 
-{ #category : #action }
-TerrainVue >> actualiserInterface [
-	
-	"Mise à jour des données sur le time et les phéromones de l'interface."
-	locationHeure text: (terrain heure asRopedText ).
-	locationNbPheromone text: (terrain nbPheromone asRopedText ).
-	
-	"Si changegmeent d'une donnée mise à jour de la donnée dans l'interface."
-	(locationNbFourmiliere text asString = terrain nbFourmiliere asString) ifFalse: [ locationNbFourmiliere text: (terrain nbFourmiliere asRopedText ). ].
-	(locationDepot text asString  = terrain depot asString) ifFalse: [ locationDepot text: (terrain depot asRopedText ). ].
-	(locationNbProie text asString = terrain nbProie asString) ifFalse: [ locationNbProie text: (terrain nbProie asRopedText ). ].
-	(locationNbOeufs text asString = terrain nbOeufs asString) ifFalse: [ locationNbOeufs text: (terrain nbOeufs asRopedText ). ].
-	(locationNbLarves text asString = terrain nbLarves asString) ifFalse: [ locationNbLarves text: (terrain nbLarves asRopedText ). ].
-	(locationNbNymphes text asString = terrain nbNymphes asString) ifFalse: [ locationNbNymphes text: (terrain nbNymphes asRopedText ). ].
-	(locationNbAdultes text asString = terrain nbAdultes asString) ifFalse: [ locationNbAdultes text: (terrain nbAdultes asRopedText ). ].
+{ #category : #private }
+TerrainVue >> createInfoPanel: aParentBlElement [
+
+	| infoPanel button |
+	infoPanel := BlElement new.
+	infoPanel background: Color gray.
+	infoPanel size: 800@200.
+	infoPanel relocate: 0@400.
+	infoPanel constraintsDo: [ :c |
+		c maxHeight: 200.
+		c horizontal matchParent. 
+	].
+	self flag:'Subscribe to the extent changes to update position of the infopanel when the parent element in resized, normaly it should be declared in the layout'.
+	aParentBlElement addEventHandlerOn: BlElementExtentChangedEvent do: [ 
+		infoPanel relocate: 0@((aParentBlElement size y) - 200).	
+	]. 
+	aParentBlElement addChild: infoPanel.
+
+	"Adding start button"
+	button := BlElement new.
+	button background: Color green.
+	button size: 100@25.
+	button relocate: 50@0.
+	button addChild:((BlTextElement new relocate: 5@10) text: ('Click to Start >' asRopedText )).
+	button addEventHandler: (BlEventHandler on: BlClickEvent do:[ :anEvent | 
+		button isVisible ifTrue:[
+			button visibility: BlVisibility hidden.
+			terrain startMainLoop.
+		].
+		anEvent consumed: true.
+	]).
+	infoPanel addChild: button.
+
+	"Ajout de l'heure à l'interface."
+	infoPanel addChild: ((BlTextElement new
+			  relocate: 50 @ 30;
+			  background: Color transparent) text: 'Time :' asRopedText).
+	locationHeure := BlTextElement new
+		                 relocate: 50 @ 50;
+		                 background: Color transparent;
+		                 text: terrain heure asRopedText.
+	infoPanel addChild: locationHeure.
+
+	"Ajout du nombre de fourmilières à l'interface."
+	infoPanel addChild: ((BlTextElement new
+			  relocate: 50 @ 80;
+			  background: Color transparent) text:
+			 'Nombre de Fourmilières :' asRopedText).
+	locationNbFourmiliere := BlTextElement new
+		                         relocate: 50 @ 100;
+		                         background: Color transparent;
+		                         text: terrain nbFourmiliere asRopedText.
+	infoPanel addChild: locationNbFourmiliere.
+
+	infoPanel addChild: ((BlTextElement new
+			  relocate: 100 @ 100;
+			  background: Color transparent) text: 'Dépôt :' asRopedText).
+	locationDepot := BlTextElement new
+		                 relocate: 150 @ 100;
+		                 background: Color transparent;
+		                 text: terrain depot asRopedText.
+	infoPanel addChild: locationDepot.
+
+
+	"Ajout du nombre de proies à l'interface."
+	infoPanel addChild: ((BlTextElement new
+			  relocate: 50 @ 130;
+			  background: Color transparent) text:
+			 'Nombre de Proies :' asRopedText).
+	locationNbProie := BlTextElement new
+		                   relocate: 50 @ 150;
+		                   background: Color transparent;
+		                   text: terrain nbProie asRopedText.
+	infoPanel addChild: locationNbProie.
+
+	"Ajout du nombre de pheromones à l'interface."
+	infoPanel addChild: ((BlTextElement new
+			  relocate: 450 @ 130;
+			  background: Color transparent) text:
+			 'Nombre de Pheromones :' asRopedText).
+	locationNbPheromone := BlTextElement new
+		                       relocate: 450 @ 150;
+		                       background: Color transparent;
+		                       text: terrain nbPheromone asRopedText.
+	infoPanel addChild: locationNbPheromone.
+
+	"Ajout du nombre de fourmis à l'interface."
+	infoPanel addChild: ((BlTextElement new
+			  relocate: 450 @ 80;
+			  background: Color transparent) text:
+			 'Nombre de Fourmis :' asRopedText).
+
+	infoPanel addChild: ((BlTextElement new
+			  relocate: 450 @ 100;
+			  background: Color transparent) text: 'Oeufs : ' asRopedText).
+	locationNbOeufs := BlTextElement new
+		                   relocate: 500 @ 100;
+		                   background: Color transparent;
+		                   text: terrain nbOeufs asRopedText.
+	infoPanel addChild: locationNbOeufs.
+
+	infoPanel addChild: ((BlTextElement new
+			  relocate: 525 @ 100;
+			  background: Color transparent) text: 'Larves : ' asRopedText).
+	locationNbLarves := BlTextElement new
+		                    relocate: 575 @ 100;
+		                    background: Color transparent;
+		                    text: terrain nbLarves asRopedText.
+	infoPanel addChild: locationNbLarves.
+
+	infoPanel addChild: ((BlTextElement new
+			  relocate: 600 @ 100;
+			  background: Color transparent) text: 'Nymphes : ' asRopedText).
+	locationNbNymphes := BlTextElement new
+		                     relocate: 675 @ 100;
+		                     background: Color transparent;
+		                     text: terrain nbNymphes asRopedText.
+	infoPanel addChild: locationNbNymphes.
+
+	infoPanel addChild: ((BlTextElement new
+			  relocate: 700 @ 100;
+			  background: Color transparent) text: 'Adultes : ' asRopedText).
+	locationNbAdultes := BlTextElement new
+		                     relocate: 760 @ 100;
+		                     background: Color transparent;
+		                     text: terrain nbAdultes asRopedText.
+	infoPanel addChild: locationNbAdultes.
 ]
 
-{ #category : #action }
+{ #category : #accessing }
 TerrainVue >> graphicLoop [
 
-	| tempChildren |
-	[ 
-	1100 timesRepeat: [ 
-		self actualiserInterface.
-		tempChildren := terrain home children.
-		tempChildren do: [ :temp | temp animation ].
-		60 milliSecond wait ] ] fork
+	^ graphicLoop
+]
+
+{ #category : #accessing }
+TerrainVue >> graphicLoop: anObject [
+
+	graphicLoop := anObject
 ]
 
 { #category : #accessing }
@@ -104,127 +217,74 @@ TerrainVue >> space [
 { #category : #action }
 TerrainVue >> start [
 
-	| monCercle |
+	| anthillCircle |
 	space := BlSpace new.
-	space title: 'Terrain'.
+	space title: 'Ground with 1 Anthill'.
 	space extent: 800 @ 600.
-	space root background: Color white.
 	space show.
 
 	mainScreen := BlElement new.
-	mainScreen size: 800 @ 600.
-	mainScreen background: Color gray.
+	mainScreen background: Color white.
+	mainScreen constraintsDo: [ :c | 
+		c horizontal matchParent.
+		c vertical matchParent. 
+	].	
 	space addChild: mainScreen.
 
 	home := BlElement new.
-	home size: 800 @ 400.
 	home background: Color black.
+	self flag:'Layout and margin not works, try to find the good way to propose 200px bottom margin'.
+	home margin: (BlInsets bottom: 200).
+	home constraintsDo: [ :c |
+		c horizontal matchParent.
+		c vertical matchParent. 
+	].	
 	mainScreen addChild: home.
 
-	monCercle := BlElement new
+	anthillCircle := BlElement new
 		             background: Color transparent;
 		             border: (BlBorder paint: Color blue width: 1);
-		             geometry: BlCircle new;
+		             geometry: BlCircleGeometry new;
 		             size: 200 @ 200;
 		             relocate: terrain fourmiliere position - 100.
-	mainScreen addChild: monCercle.
+	mainScreen addChild: anthillCircle.
 
-	"Ajout de l'heure à l'interface."
-	mainScreen addChild: ((BlTextElement new
-			  relocate: 50 @ 430;
-			  background: Color transparent) text: 'Time :' asRopedText).
-	locationHeure := BlTextElement new
-		                 relocate: 50 @ 450;
-		                 background: Color transparent;
-		                 text: terrain heure asRopedText.
-	mainScreen addChild: locationHeure.
+	self createInfoPanel: mainScreen.
+	self startGraphicLoop
+]
 
-	"Ajout du nombre de fourmilières à l'interface."
-	mainScreen addChild: ((BlTextElement new
-			  relocate: 50 @ 480;
-			  background: Color transparent) text:
-			 'Nombre de Fourmilières :' asRopedText).
-	locationNbFourmiliere := BlTextElement new
-		                         relocate: 50 @ 500;
-		                         background: Color transparent;
-		                         text: terrain nbFourmiliere asRopedText.
-	mainScreen addChild: locationNbFourmiliere.
+{ #category : #action }
+TerrainVue >> startGraphicLoop [
 
-	mainScreen addChild: ((BlTextElement new
-			  relocate: 100 @ 500;
-			  background: Color transparent) text: 'Dépôt :' asRopedText).
-	locationDepot := BlTextElement new
-		                 relocate: 150 @ 500;
-		                 background: Color transparent;
-		                 text: terrain depot asRopedText.
-	mainScreen addChild: locationDepot.
+	| tempChildren |
+	graphicLoop ifNotNil: [ "Loop already started" ^self ].
+	graphicLoop := ([ 
+		[true] whileTrue: [ | startTimeInMs endTimeInMs waitingTimeInMs |
+			startTimeInMs := Time now asMilliSeconds.
+			self updateUI.
+			tempChildren := self home children.
+			tempChildren do: [ :temp | temp animation ].
+			endTimeInMs := Time now asMilliSeconds.
+			"60 fps correspond to ~16.6ms per frame"
+			waitingTimeInMs := (16.6 - (endTimeInMs - startTimeInMs) max: 0.1). 
+			waitingTimeInMs milliSecond wait.
+		] 
+	] forkAt: Processor userBackgroundPriority )
+]
 
+{ #category : #action }
+TerrainVue >> stop [
+	"stop all the simulation"
 
-	"Ajout du nombre de proies à l'interface."
-	mainScreen addChild: ((BlTextElement new
-			  relocate: 50 @ 530;
-			  background: Color transparent) text:
-			 'Nombre de Proies :' asRopedText).
-	locationNbProie := BlTextElement new
-		                   relocate: 50 @ 550;
-		                   background: Color transparent;
-		                   text: terrain nbProie asRopedText.
-	mainScreen addChild: locationNbProie.
+	self stopGraphicLoop
+]
 
-	"Ajout du nombre de pheromones à l'interface."
-	mainScreen addChild: ((BlTextElement new
-			  relocate: 450 @ 530;
-			  background: Color transparent) text:
-			 'Nombre de Pheromones :' asRopedText).
-	locationNbPheromone := BlTextElement new
-		                       relocate: 450 @ 550;
-		                       background: Color transparent;
-		                       text: terrain nbPheromone asRopedText.
-	mainScreen addChild: locationNbPheromone.
+{ #category : #action }
+TerrainVue >> stopGraphicLoop [
 
-	"Ajout du nombre de fourmis à l'interface."
-	mainScreen addChild: ((BlTextElement new
-			  relocate: 450 @ 480;
-			  background: Color transparent) text:
-			 'Nombre de Fourmis :' asRopedText).
-
-	mainScreen addChild: ((BlTextElement new
-			  relocate: 450 @ 500;
-			  background: Color transparent) text: 'Oeufs : ' asRopedText).
-	locationNbOeufs := BlTextElement new
-		                   relocate: 500 @ 500;
-		                   background: Color transparent;
-		                   text: terrain nbOeufs asRopedText.
-	mainScreen addChild: locationNbOeufs.
-
-	mainScreen addChild: ((BlTextElement new
-			  relocate: 525 @ 500;
-			  background: Color transparent) text: 'Larves : ' asRopedText).
-	locationNbLarves := BlTextElement new
-		                    relocate: 575 @ 500;
-		                    background: Color transparent;
-		                    text: terrain nbLarves asRopedText.
-	mainScreen addChild: locationNbLarves.
-
-	mainScreen addChild: ((BlTextElement new
-			  relocate: 600 @ 500;
-			  background: Color transparent) text: 'Nymphes : ' asRopedText).
-	locationNbNymphes := BlTextElement new
-		                     relocate: 675 @ 500;
-		                     background: Color transparent;
-		                     text: terrain nbNymphes asRopedText.
-	mainScreen addChild: locationNbNymphes.
-
-	mainScreen addChild: ((BlTextElement new
-			  relocate: 700 @ 500;
-			  background: Color transparent) text: 'Adultes : ' asRopedText).
-	locationNbAdultes := BlTextElement new
-		                     relocate: 760 @ 500;
-		                     background: Color transparent;
-		                     text: terrain nbAdultes asRopedText.
-	mainScreen addChild: locationNbAdultes.
-
-	self graphicLoop
+	graphicLoop ifNil:[^self].
+	graphicLoop terminate.
+	graphicLoop := nil.
 ]
 
 { #category : #accessing }
@@ -236,5 +296,22 @@ TerrainVue >> terrain [
 { #category : #accessing }
 TerrainVue >> terrain: aTerrain [
 
-	terrain := aTerrain.
+	terrain := aTerrain
+]
+
+{ #category : #action }
+TerrainVue >> updateUI [
+	
+	"Mise à jour des données sur le time et les phéromones de l'interface."
+	locationHeure text: (terrain heure asRopedText ).
+	locationNbPheromone text: (terrain nbPheromone asRopedText ).
+	
+	"Si changegmeent d'une donnée mise à jour de la donnée dans l'interface."
+	(locationNbFourmiliere text asString = terrain nbFourmiliere asString) ifFalse: [ locationNbFourmiliere text: (terrain nbFourmiliere asRopedText ). ].
+	(locationDepot text asString  = terrain depot asString) ifFalse: [ locationDepot text: (terrain depot asRopedText ). ].
+	(locationNbProie text asString = terrain nbProie asString) ifFalse: [ locationNbProie text: (terrain nbProie asRopedText ). ].
+	(locationNbOeufs text asString = terrain nbOeufs asString) ifFalse: [ locationNbOeufs text: (terrain nbOeufs asRopedText ). ].
+	(locationNbLarves text asString = terrain nbLarves asString) ifFalse: [ locationNbLarves text: (terrain nbLarves asRopedText ). ].
+	(locationNbNymphes text asString = terrain nbNymphes asString) ifFalse: [ locationNbNymphes text: (terrain nbNymphes asRopedText ). ].
+	(locationNbAdultes text asString = terrain nbAdultes asString) ifFalse: [ locationNbAdultes text: (terrain nbAdultes asRopedText ). ].
 ]

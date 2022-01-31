@@ -27,7 +27,7 @@ Class {
 	#instVars : [
 		'dateDeCreation'
 	],
-	#category : #Ants
+	#category : #'Ants-Model'
 }
 
 { #category : #accessing }

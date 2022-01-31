@@ -24,5 +24,5 @@ Internal Representation and Key Implementation Points.
 Class {
 	#name : #Interface,
 	#superclass : #Entite,
-	#category : #Ants
+	#category : #'Ants-Model'
 }

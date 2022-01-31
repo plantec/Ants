@@ -32,7 +32,7 @@ Class {
 		'position',
 		'updateState'
 	],
-	#category : #Ants
+	#category : #'Ants-Model'
 }
 
 { #category : #testing }
