@@ -60,6 +60,7 @@ EntiteVue >> initializeElementsAndAppareance: aNumber [
 	"3 : fourmis"
 	isFourmis := false.
 	isProie := false.
+	self geometry: BlCircleGeometry new.
 	
 	aNumber = 1 ifTrue: [ 
 		isProie := true.
